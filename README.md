@@ -2,6 +2,8 @@
 
 _A set of utilities for working with beacon lights, currently just the USB one included with the Farming Simulator 22 Collector's Edition._
 
+<img src="blinkybeacon-docker.jpg" alt="blinkybeacon-docker" width="75%">
+
 ## Why on earth
 
 Were you lucky enough to have the Farming Simulator 22 Collector's Edition magically appear on your desk?
@@ -38,6 +40,26 @@ fsbeacon spin 2.5
 If you want the beacon to do a thing indefinitely, simply pass no duration argument - it'll then strobe or spin until you stop the process somehow (probably via CTRL+C).
 
 You'll find more details on using the package in your own applications in its [readme](pkg/fsbeacon/README.md). Please do let me know what you end up making!
+
+## Docker & HTTP API
+
+This fork adds a small HTTP API (`cmd/beacon-api`) and a Docker image that runs it, so you can poke the beacon over the network:
+
+```
+curl http://localhost:9100/strobe/15
+curl http://localhost:9100/spin/2.5
+curl http://localhost:9100/off
+```
+
+Durations accept plain seconds (`2`, `2.5`) or Go duration strings (`2s`, `500ms`, `1m`) and must be greater than zero. Omit the duration (e.g. `/spin`) to run until you call `/off`. There's no hard minimum, but expect anything under about half a second to be dominated by USB/process overhead and the beacon's own response time.
+
+Build and run with compose (the beacon device is passed through via `devices`):
+
+```
+docker compose up -d
+```
+
+Images are published to GHCR by the `docker-build` GitHub Action on pushes to `main`.
 
 ## License
 
