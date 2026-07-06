@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -21,15 +22,30 @@ func Execute() {
 	}
 }
 
+// parseRuntime accepts either a plain number of seconds ("2", "2.5")
+// or a Go duration string ("2s", "500ms", "1m").
+func parseRuntime(arg string) (time.Duration, error) {
+	var d time.Duration
+	if seconds, err := strconv.ParseFloat(arg, 64); err == nil {
+		d = time.Duration(seconds * float64(time.Second))
+	} else if d, err = time.ParseDuration(arg); err != nil {
+		return 0, err
+	}
+	if d <= 0 {
+		return 0, fmt.Errorf("duration must be positive (omit it to run until stopped)")
+	}
+	return d, nil
+}
+
 func runUntilInterrupted() {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 	fmt.Print("Caught SIGTERM, exiting.")
 }
 
 func runWithTimeout(t time.Duration) {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	select {
 	case <-c:

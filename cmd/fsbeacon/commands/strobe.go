@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/duckfullstop/blinkybeacon/pkg/fsbeacon"
 	"github.com/spf13/cobra"
-	"strconv"
 	"time"
 )
 
@@ -22,12 +21,10 @@ var strobeCmd = &cobra.Command{
 func handleStrobeBeacon(_ *cobra.Command, args []string) (err error) {
 	var runtime time.Duration
 	if len(args) > 0 {
-		var arg float64
-		arg, err = strconv.ParseFloat(args[0], 32)
+		runtime, err = parseRuntime(args[0])
 		if err != nil {
 			return
 		}
-		runtime = time.Duration(arg) * time.Second
 	}
 
 	var d fsbeacon.Beacon
