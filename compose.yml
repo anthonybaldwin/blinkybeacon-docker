@@ -1,0 +1,9 @@
+services:
+  fsbeacon:
+    image: ghcr.io/anthonybaldwin/blinkybeacon-docker:latest
+    container_name: fsbeacon
+    restart: unless-stopped
+    devices:
+      - /dev/hidraw0:/dev/hidraw0
+    ports:
+      - "9100:9100"

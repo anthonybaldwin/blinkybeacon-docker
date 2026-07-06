@@ -1,0 +1,4 @@
+services:
+  fsbeacon:
+    build: .
+    image: fsbeacon:local
