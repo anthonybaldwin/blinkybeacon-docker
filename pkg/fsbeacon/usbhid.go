@@ -130,7 +130,18 @@ func (beacon *FarmBeacon) Stop() (err error) {
 	if beacon.stop != nil {
 		// Beacon worker already running, stop it along with the animation.
 		beacon.stop <- true
+		// The worker holds the lock until it has written the stop state and
+		// exited. Wait for that before returning - otherwise the caller may
+		// Close() the device before the stop write lands, and the beacon
+		// keeps animating until its internal keepalive timeout expires.
+		beacon.Mutex.Lock()
+		beacon.Mutex.Unlock()
+		beacon.stop = nil
+		return
 	}
+	// No worker running in this process (e.g. a standalone stop command) -
+	// write the stop state to the device directly.
+	_, err = beacon.hidDevice.Write(fs22MagicStop)
 	return
 }
 
