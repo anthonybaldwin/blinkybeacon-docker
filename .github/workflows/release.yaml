@@ -23,7 +23,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          goversion: "1.19"
+          goversion: "1.27"
           pre_command: "apt-get update && apt-get install -y libudev-dev libusb-1.0-0-dev"
           project_path: "./cmd/fsbeacon"
           binary_name: "fsbeacon"
