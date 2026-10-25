@@ -53,6 +53,8 @@ curl http://localhost:9100/off
 
 Durations accept plain seconds (`2`, `2.5`) or Go duration strings (`2s`, `500ms`, `1m`) and must be greater than zero. Omit the duration (e.g. `/spin`) to run until you call `/off`. There's no hard minimum, but expect anything under about half a second to be dominated by USB/process overhead and the beacon's own response time.
 
+A timed request returns once the run finishes. Any new command (including `/off`) cancels the current spin or strobe, timed or not, and a cancelled timed request responds `OK: ... superseded by a later command`.
+
 Build and run with compose (the beacon device is passed through via `devices`):
 
 ```
